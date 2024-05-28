@@ -53,8 +53,8 @@ class Cell:
             neighbors.append(down)
         if left and not left.visited:
             neighbors.append(left)
-        #if len(neighbors) == 0:
-        #    return False
+        if len(neighbors) == 0:
+            return False
         return random.choice(neighbors)
 
     def check_neighbor(self,y,x):
@@ -64,20 +64,24 @@ class Cell:
             
     
 
+def remove_walls(current,other):
+    dx = current.x - other.x
+    dy = current.y - other.y
+    if dx == -1:
+        current.walls["right"] = False
+        other.walls["left"] = False
+    if dx == 1:
+        current.walls["left"] = False
+        other.walls["right"] = False
+    if dy == -1:
+        current.walls["down"] = False
+        other.walls["up"] = False
+    if dy == 1:
+        current.walls["up"] = False
+        other.walls["down"] = False
 
-# 0,0 1,0 2,0
-# 0,1 1,1 2,1
-# 0,2 1,2 2,2
 
-
-
-
-
-
-
-
-
-WIDTH, HEIGHT = 300, 300
+WIDTH, HEIGHT = 1000, 1000
 BUFFER = 1
 SQUARESSIZE = 20
 cols = WIDTH // SQUARESSIZE
@@ -105,9 +109,13 @@ while True:
     next_cell = current_cell.find_neighbor()
     if next_cell:
         next_cell.visited = True
+        stack.append(current_cell)
+        remove_walls(current_cell,next_cell)
         current_cell = next_cell
+    elif stack:
+        current_cell = stack.pop()
     
 
     pygame.display.flip()
-    clock.tick(5)
+    # clock.tick(30)
 
